@@ -23,6 +23,7 @@ import {MotionMatchPairs} from '../Motions/MatchPairs';
 import {MotionPairsDirection} from '../Motions/MatchPairs';
 import {LastCharacterMatching} from '../Motions/MatchPairs';
 import {FirstPosPairMatching} from '../Motions/MatchPairs';
+import {MotionCursorPairs} from '../Motions/MatchCursorPairs';
 
 export class ModeNormal extends Mode {
 
@@ -54,19 +55,22 @@ export class ModeNormal extends Mode {
                 .then(ActionDelete.byMotions.bind(undefined, {motions: [MotionLine.end()], shouldYank: true}))
                 .then(() => ActionMode.toInsert());
         } },
-        { keys: 'c i {char}', 
-            command: (args: {character: string}) => 
-                ActionMoveCursor.byMotions({motions: [ MotionMatchPairs.matchOpening(args, LastCharacterMatching.Exclude, FirstPosPairMatching.Ignore) ]})  
+        { keys: 'c i {char}',
+            command: (args: {character: string}) =>
+                ActionMoveCursor.byMotions({motions: [ MotionMatchPairs.matchOpening(args, LastCharacterMatching.Exclude, FirstPosPairMatching.Ignore) ]})
                 //we should not apply the delete move is the first cursor move is invalid.
                 //for now, this implementation leads to issue like this (cursor : -)
                 // 11111"22222"
                 //  -
                 //when we enter ci"
-                //leads to 
+                //leads to
                 // 1"22222"
-                //  - 
-                .then(() => ActionDelete.byMotions({motions: [MotionMatchPairs.matchClosing(args, LastCharacterMatching.Include, FirstPosPairMatching.Notice)], shouldYank: true})) 
+                //  -
+                .then(() => ActionDelete.byMotions({motions: [MotionMatchPairs.matchClosing(args, LastCharacterMatching.Include, FirstPosPairMatching.Notice)], shouldYank: true}))
                 .then(() => ActionMode.toInsert())
+        },
+        { keys: '%',
+            command: () => ActionMoveCursor.byMotions({motions: [ new MotionCursorPairs() ]})
         },
         { keys: 'S', command: () => {
             return ActionMoveCursor.byMotions({motions: [MotionLine.firstNonBlank()]})

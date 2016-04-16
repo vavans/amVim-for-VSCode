@@ -20,4 +20,8 @@ export class UtilPosition {
         return new Position(line, character);
     }
 
+    static areEquals(pos1 : Position, pos2 : Position) : boolean {
+        return pos1.line == pos2.line && pos1.character == pos2.character;
+    }
+
 }
